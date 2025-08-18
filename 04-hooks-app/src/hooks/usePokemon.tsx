@@ -1,0 +1,55 @@
+import { useEffect, useState } from "react"
+
+interface Pokemon {
+    id: number
+    name: string;
+    imageUrl: string
+}
+
+interface Props {
+    id: number,
+
+}
+
+
+
+export const usePokemon = ({id}: Props) => {
+
+    const [pokemon, setPokemon] = useState<Pokemon | null>(null)
+
+    const [loading, setLoading] = useState(true)
+
+
+    const getPokemonById = async(id:number) => {
+        setLoading(true)
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`)
+        const data = await response.json()
+        setPokemon({
+            id:id,
+            name: data.name,
+            imageUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`
+        })
+        setLoading(false)
+    }
+    
+    
+    
+    useEffect(() => {
+      
+        getPokemonById(id)
+
+    }, [id])
+    
+
+
+
+
+  
+  return {
+    pokemon,
+    loading,
+
+    formatedId: id.toString().padStart(3,'0')
+  }
+  
+}
