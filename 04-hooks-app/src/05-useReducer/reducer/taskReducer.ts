@@ -1,4 +1,7 @@
-import { stat } from "fs";
+import { text } from "stream/consumers";
+import { compile } from "tailwindcss";
+import * as z from "zod";
+
 
 interface Todo {
     id: number
@@ -17,10 +20,26 @@ export type TaskAction =
     | { type: 'ADD_TODO',payload:string} 
     | { type: 'TOGGLE_TODO',payload: number}
     | { type: 'DELETE_TODO',payload:number}
-    
+ 
+
+const TodoSchema = z.object({
+    id: z.number(),
+    text: z.string(),
+    completed: z.boolean(),
+})
+
+const TaskStateSchema = z.object({
+    todos: z.array(TodoSchema),
+    lenght: z.number(),
+    completed: z.number(),
+    pending: z.number()
+})
+
+
+
 export const getTasksInitialState = (): TaskState => {
     
-    const localStorageState = localStorage.getItem('task-state')
+    const localStorageState = localStorage.getItem('tasks-state')
     
     if(!localStorageState) {
         return {
@@ -30,12 +49,26 @@ export const getTasksInitialState = (): TaskState => {
         lenght: 0,
     }
     }
-
+    //valida mediante Zod
+    const result = TaskStateSchema.safeParse(JSON.parse(localStorageState))
+    if(result.error){
+        console.log(result.error)
+        return {
+            todos: [],
+            completed: 0,
+            pending: 0,
+            lenght: 0,
+        }
+    }
+    return result.data
+    
     //porque el objeto pueo ser manipulado hol a como estas la verdad es que yo estoy dwdwdw
-    return JSON.parse(localStorageState)
+    //return JSON.parse(localStorageState)
+}
+
 
     
-}
+
 
 
 export const taskReducer = (state:TaskState,action:TaskAction): TaskState => {
@@ -47,6 +80,7 @@ export const taskReducer = (state:TaskState,action:TaskAction): TaskState => {
             text: action.payload,
             completed: false,
             }
+
 
             return {...state,
                 lenght: state.todos.length + 1,
