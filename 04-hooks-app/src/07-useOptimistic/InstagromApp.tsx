@@ -1,6 +1,5 @@
 import { useOptimistic, useState, useTransition } from 'react';
-import { set } from 'zod';
-import { is } from 'zod/locales';
+import { Toaster, toast } from 'sonner'
 
 interface Comment {
   id: number;
@@ -45,16 +44,18 @@ export const InstagromApp = () => {
     startTransition(async()=> {  // todo dentro de aca no bloquea el UI, se ejecuta en segundo plano
       await new Promise(resolve =>  setTimeout(resolve,3000))
 
-
-        // setComments( (prev) => [
-        //   ...prev,
-        //   {
-        //     id: new Date().getTime(),
-        //     text: messageText,
-        //   }
-        // ])
-      
         setComments(prev => prev)
+        toast('Error al agregar el comentario',{
+          description: 'Intente nuevamente',
+          duration: 10000,
+          position: 'top-right',
+          action:{
+            label: 'Cerrar',
+            onClick() {
+              toast.dismiss
+            },
+          } 
+        })
     })
 
     

@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type React from "react";
 import type { JSX, PropsWithChildren } from "react";
 
 interface Props extends PropsWithChildren {
